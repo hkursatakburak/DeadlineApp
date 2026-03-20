@@ -43,3 +43,20 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Secret files
+.env*
+android/key.properties
+android/local.properties
+android/google-services.json
+
+# iOS artifacts
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/App.framework
+ios/Flutter/App.podspec
+
+# Generated files
+# **/*.g.dart
+# **/*.freezed.dart
+
