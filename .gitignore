@@ -46,9 +46,12 @@ app.*.map.json
 
 # Secret files
 .env*
-android/key.properties
-android/local.properties
-android/google-services.json
+**/key.properties
+**/local.properties
+**/google-services.json
+**/GoogleService-Info.plist
+**/*.keystore
+**/*.jks
 
 # iOS artifacts
 ios/Flutter/Generated.xcconfig
