@@ -30,6 +30,66 @@ class DesignerPainter extends CustomPainter {
     canvas.save();
     canvas.scale(scaleX, scaleY);
 
+    // ── Equipment (Desk, Monitor, Chair) ─────────────────────────────────────
+    // These paths are transcribed from the "Rail" group in deadline-loader.html
+    final equipPath = Path();
+
+    // 1. Desk and Monitor Stand area
+    equipPath.moveTo(571, 76);
+    equipPath.lineTo(571, 71);
+    equipPath.lineTo(547.392, 71);
+    equipPath.cubicTo(547.868, 61.049, 542.75, 57.75, 542.75, 57.75);
+    equipPath.lineTo(539.625, 61.75);
+    equipPath.cubicTo(539.625, 61.75, 543.351, 64.45, 543.25, 66.875);
+    equipPath.cubicTo(543.179, 68.589, 540.539, 70.055, 538.288, 71);
+    equipPath.lineTo(517, 71);
+    equipPath.lineTo(517, 76);
+    equipPath.lineTo(527, 76);
+    equipPath.lineTo(527, 100);
+    equipPath.lineTo(502, 100);
+    equipPath.lineTo(502, 94.334);
+    equipPath.cubicTo(502, 94.334, 502.839, 94.334, 504.839, 93.667);
+    equipPath.cubicTo(506.839, 93, 511.011, 89.999, 508.844, 87.334);
+    equipPath.cubicTo(506.677, 84.667, 501.354, 85, 499.188, 84.834);
+    equipPath.cubicTo(497.022, 84.667, 492.709, 83.167, 491.042, 86.584);
+    equipPath.cubicTo(489.491, 89.762, 491.833, 91.834, 496.583, 92.667);
+    equipPath.lineTo(496.518, 97.167);
+    equipPath.lineTo(16, 97.167); // Extended Desk line
+    equipPath.cubicTo(13.239, 97.167, 11, 99.405, 11, 102.167);
+    equipPath.lineTo(11, 119.167);
+    equipPath.cubicTo(11, 121.929, 13.239, 124.167, 16, 124.167);
+    equipPath.lineTo(565, 124.167);
+    equipPath.cubicTo(567.761, 124.167, 570, 121.929, 570, 119.167);
+    equipPath.lineTo(570, 102.167);
+    equipPath.cubicTo(570, 99.406, 567.762, 97.167, 565, 97.167);
+    equipPath.lineTo(562, 97.167);
+    equipPath.lineTo(562, 76);
+    equipPath.close();
+
+    // 2. Monitor Screen
+    final monitorPath = Path();
+    monitorPath.moveTo(535, 65.625);
+    monitorPath.cubicTo(536.125, 66.25, 537.25, 64.5, 537.25, 64.5);
+    monitorPath.lineTo(548.875, 42.125);
+    monitorPath.cubicTo(548.875, 42.125, 549.625, 41.25, 547.125, 40);
+    monitorPath.cubicTo(544.625, 38.75, 543.75, 40.25, 543.75, 40.25);
+    monitorPath.lineTo(533.875, 63.75);
+    monitorPath.cubicTo(532.75, 65, 533.875, 65, 535, 65.625);
+    monitorPath.close();
+
+    // 3. Chair area (simplified)
+    final chairPath = Path();
+    chairPath.moveTo(491.979, 83.878);
+    chairPath.cubicTo(493.194, 83.148, 491.359, 78.474, 488.75, 72.834);
+    chairPath.cubicTo(486.167, 67.25, 483.716, 62.768, 481.521, 63.956);
+    chairPath.cubicTo(478.667, 65.5, 481.329, 70.242, 484.5, 75.584);
+    chairPath.cubicTo(487.667, 80.917, 490.667, 84.667, 491.979, 83.878);
+    chairPath.close();
+
+    canvas.drawPath(equipPath, paint);
+    canvas.drawPath(monitorPath, paint);
+    canvas.drawPath(chairPath, paint);
+
     // ── Body ─────────────────────────────────────────────────────────────────
     final bodyPath = Path();
     bodyPath.moveTo(514.75, 100.334);

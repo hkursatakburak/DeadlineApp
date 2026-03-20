@@ -347,34 +347,40 @@ class _DeadlineTimeLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseColor = Theme.of(context).colorScheme.onSurface;
+    // We use a fixed width for the label container to ensure centering stays consistent
+    const labelWidth = 581.0;
+    final wipeWidth = labelWidth * wipeProgress * 0.98;
+
     return SizedBox(
       height: 28,
       child: Stack(
         children: [
-          // Base text (theme-adaptive)
+          // 1. Base Layer (Theme-adaptive): Shows ONLY the part not yet reached by the wipe
           Positioned.fill(
-            child: Center(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: baseColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.2,
+            child: ClipRect(
+              clipper: _PartClipper(progressWidth: wipeWidth, isLeft: false),
+              child: Center(
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: baseColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
             ),
           ),
-          // Red wipe mask growing left→right
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: MediaQuery.sizeOf(context).width * wipeProgress * 0.98,
+          // 2. Red Layer: Shows ONLY the part reached by the wipe
+          Positioned.fill(
             child: ClipRect(
+              clipper: _PartClipper(progressWidth: wipeWidth, isLeft: true),
               child: Center(
                 child: Text(
                   label,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.deadlineRed,
                     fontSize: 13,
@@ -389,6 +395,29 @@ class _DeadlineTimeLabel extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PartClipper extends CustomClipper<Rect> {
+  final double progressWidth;
+  final bool isLeft;
+
+  _PartClipper({required this.progressWidth, required this.isLeft});
+
+  @override
+  Rect getClip(Size size) {
+    if (isLeft) {
+      return Rect.fromLTWH(0, 0, progressWidth, size.height);
+    } else {
+      // Small 0.5px adjustments can sometimes help with anti-aliasing gaps,
+      // but exact partitioning is usually cleanest.
+      return Rect.fromLTWH(
+          progressWidth, 0, size.width - progressWidth, size.height);
+    }
+  }
+
+  @override
+  bool shouldReclip(_PartClipper oldClipper) =>
+      oldClipper.progressWidth != progressWidth || oldClipper.isLeft != isLeft;
 }
 
 // Helper model
