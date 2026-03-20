@@ -108,6 +108,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(_isNew ? 'Yeni Not' : 'Notu Düzenle'),
         actions: [
@@ -118,104 +119,127 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Title
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              controller: _titleCtrl,
-              decoration: const InputDecoration(
-                hintText: 'Not başlığı',
-                border: InputBorder.none,
-                filled: false,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                controller: _titleCtrl,
+                decoration: const InputDecoration(
+                  hintText: 'Not başlığı',
+                  border: InputBorder.none,
+                  filled: false,
+                ),
+                style: Theme.of(context).textTheme.titleLarge,
+                maxLines: 1,
               ),
-              style: Theme.of(context).textTheme.titleLarge,
-              maxLines: 1,
             ),
-          ),
-          // Quill toolbar
-          QuillSimpleToolbar(
-            controller: _quillCtrl,
-            config: const QuillSimpleToolbarConfig(
-              showBoldButton: true,
-              showItalicButton: true,
-              showUnderLineButton: true,
-              showStrikeThrough: true,
-              showListBullets: true,
-              showListNumbers: true,
-              showQuote: true,
-              showHeaderStyle: true,
-              showUndo: true,
-              showRedo: true,
-              showColorButton: false,
-              showBackgroundColorButton: false,
-              showFontFamily: false,
-              showFontSize: false,
-              showAlignmentButtons: false,
-              showIndent: false,
-              showLink: false,
-              showSearchButton: false,
-              showSubscript: false,
-              showSuperscript: false,
-              showSmallButton: false,
+            // Quill toolbar
+            QuillSimpleToolbar(
+              controller: _quillCtrl,
+              config: const QuillSimpleToolbarConfig(
+                showBoldButton: true,
+                showItalicButton: true,
+                showUnderLineButton: true,
+                showStrikeThrough: true,
+                showListBullets: true,
+                showListNumbers: true,
+                showQuote: true,
+                showHeaderStyle: true,
+                showUndo: true,
+                showRedo: true,
+                showColorButton: false,
+                showBackgroundColorButton: false,
+                showFontFamily: false,
+                showFontSize: false,
+                showAlignmentButtons: false,
+                showIndent: false,
+                showLink: false,
+                showSearchButton: false,
+                showSubscript: false,
+                showSuperscript: false,
+                showSmallButton: false,
+              ),
             ),
-          ),
-          const Divider(height: 1),
-          // Editor
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: QuillEditor.basic(
-                controller: _quillCtrl,
-                config: const QuillEditorConfig(
-                  placeholder: 'Notunuzu buraya yazın…',
-                  padding: EdgeInsets.symmetric(vertical: 12),
+            const Divider(height: 1),
+            // Editor
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: QuillEditor.basic(
+                  controller: _quillCtrl,
+                  config: const QuillEditorConfig(
+                    placeholder: 'Notunuzu buraya yazın…',
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                  ),
                 ),
               ),
             ),
-          ),
-          // Tags
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_tags.isNotEmpty)
-                  Wrap(
-                    spacing: 6,
-                    children: _tags
-                        .map((t) => Chip(
-                              label: Text(t),
-                              deleteIcon:
-                                  const Icon(Icons.close, size: 14),
-                              onDeleted: () =>
-                                  setState(() => _tags.remove(t)),
-                            ))
-                        .toList(),
-                  ),
-                Row(
+            // Tags - footer section
+            Material(
+              elevation: 4,
+              color: Theme.of(context).colorScheme.surface,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  12,
+                  8,
+                  12,
+                  MediaQuery.viewInsetsOf(context).bottom > 0 ? 4 : 12,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _tagCtrl,
-                        decoration: const InputDecoration(
-                          hintText: 'Etiket ekle',
-                          isDense: true,
+                    if (_tags.isNotEmpty)
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _tags
+                              .map((t) => Padding(
+                                    padding: const EdgeInsets.only(right: 6),
+                                    child: Chip(
+                                      label: Text(t,
+                                          style: const TextStyle(fontSize: 12)),
+                                      visualDensity: VisualDensity.compact,
+                                      deleteIcon:
+                                          const Icon(Icons.close, size: 14),
+                                      onDeleted: () =>
+                                          setState(() => _tags.remove(t)),
+                                    ),
+                                  ))
+                              .toList(),
                         ),
-                        onSubmitted: (_) => _addTag(),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: _addTag,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _tagCtrl,
+                            decoration: const InputDecoration(
+                              hintText: 'Etiket ekle',
+                              isDense: true,
+                              border: InputBorder.none,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                            onSubmitted: (_) => _addTag(),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add, size: 20),
+                          onPressed: _addTag,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
