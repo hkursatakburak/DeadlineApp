@@ -73,19 +73,54 @@ class SettingsScreen extends ConsumerWidget {
 
           // ── Genel ──────────────────────────────────────────────────────────
           const _SectionHeader('Genel'),
-          ListTile(
-            leading: const Icon(Icons.palette_outlined),
-            title: const Text('Tema'),
-            trailing: SegmentedButton<ThemeMode>(
-              segments: const [
-                ButtonSegment(value: ThemeMode.system, label: Text('Sistem')),
-                ButtonSegment(value: ThemeMode.light, label: Text('Açık')),
-                ButtonSegment(value: ThemeMode.dark, label: Text('Koyu')),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                // Group Icon and Text and wrap in Expanded
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(Icons.palette_outlined, 
+                           color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 16),
+                      const Text(
+                        'Tema',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+                // Constrain SegmentedButton and use smaller labels to prevent squishing
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 210),
+                  child: SegmentedButton<ThemeMode>(
+                    style: const ButtonStyle(
+                      visualDensity: VisualDensity.compact,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    segments: const [
+                      ButtonSegment(
+                        value: ThemeMode.system, 
+                        label: Text('Sistem', style: TextStyle(fontSize: 11)),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.light, 
+                        label: Text('Açık', style: TextStyle(fontSize: 11)),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark, 
+                        label: Text('Koyu', style: TextStyle(fontSize: 11)),
+                      ),
+                    ],
+                    selected: {themeMode},
+                    onSelectionChanged: (s) => ref
+                        .read(themeModeNotifierProvider.notifier)
+                        .setTheme(s.first),
+                    showSelectedIcon: false,
+                  ),
+                ),
               ],
-              selected: {themeMode},
-              onSelectionChanged: (s) => ref
-                  .read(themeModeNotifierProvider.notifier)
-                  .setTheme(s.first),
             ),
           ),
           const Divider(),
