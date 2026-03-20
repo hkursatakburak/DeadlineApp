@@ -89,6 +89,78 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
+  void _showTaskActions(BuildContext context, Task task, TasksNotifier notifier) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(color: AppColors.deadlineRed.withOpacity(0.3), width: 0.5),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              task.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined, color: Colors.blue),
+              title: const Text('Düzenle'),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.go('/tasks/edit/${task.id}');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: const Text('Sil'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (dCtx) => AlertDialog(
+                    title: const Text('Görevi Sil?'),
+                    content: const Text('Bu görev kalıcı olarak silinecek.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dCtx, false),
+                        child: const Text('Vazgeç'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(dCtx, true),
+                        child: const Text('Sil', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  await notifier.delete(task.id);
+                }
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
   List<Widget> _section(
     BuildContext context,
     String title,
@@ -110,6 +182,7 @@ class TasksScreen extends ConsumerWidget {
         return _TaskTile(
           task: task,
           onComplete: (v) => notifier.markCompleted(task.id, v ?? false),
+          onLongPress: () => _showTaskActions(context, task, notifier),
           onDelete: () async {
             await notifier.delete(task.id);
             if (context.mounted) {
@@ -136,11 +209,13 @@ class _TaskTile extends StatefulWidget {
   final Task task;
   final ValueChanged<bool?> onComplete;
   final VoidCallback onDelete;
+  final VoidCallback onLongPress;
 
   const _TaskTile({
     required this.task,
     required this.onComplete,
     required this.onDelete,
+    required this.onLongPress,
   });
 
   @override
@@ -176,8 +251,10 @@ class _TaskTileState extends State<_TaskTile> {
           widget.onDelete();
         }
       },
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 8),
+      child: GestureDetector(
+        onLongPress: widget.onLongPress,
+        child: Card(
+          margin: const EdgeInsets.only(bottom: 8),
         child: Column(
           children: [
             ListTile(
@@ -243,9 +320,10 @@ class _TaskTileState extends State<_TaskTile> {
               ),
           ],
         ),
+        ),
       ),
     );
   }
 }
 
-const _priorityLabels = ['Düşük', 'Orta', 'Yüksek', 'Kritik'];
+

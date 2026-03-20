@@ -13,9 +13,82 @@ import '../../../../core/utils/date_utils.dart';
 class DeadlinesScreen extends ConsumerWidget {
   const DeadlinesScreen({super.key});
 
+  void _showDeadlineActions(BuildContext context, DeadlineItem deadline, DeadlinesNotifier notifier) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(color: AppColors.deadlineRed.withOpacity(0.3), width: 0.5),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              deadline.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined, color: Colors.blue),
+              title: const Text('Düzenle'),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.go('/deadlines/edit/${deadline.id}');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: const Text('Sil'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (dCtx) => AlertDialog(
+                    title: const Text('Deadline Sil?'),
+                    content: const Text('Bu deadline kalıcı olarak silinecek.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dCtx, false),
+                        child: const Text('Vazgeç'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(dCtx, true),
+                        child: const Text('Sil', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  await notifier.delete(deadline.id);
+                }
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deadlinesAsync = ref.watch(deadlinesNotifierProvider);
+    final notifier = ref.read(deadlinesNotifierProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Deadlines')),
@@ -64,6 +137,7 @@ class DeadlinesScreen extends ConsumerWidget {
                           deadline: deadlines[i],
                           onTap: () =>
                               context.go('/deadlines/detail/${deadlines[i].id}'),
+                          onLongPress: () => _showDeadlineActions(context, deadlines[i], notifier),
                         )
                             .animate()
                             .fadeIn(delay: (i * 40).ms)
@@ -86,8 +160,9 @@ class DeadlinesScreen extends ConsumerWidget {
 class DeadlineCard extends StatefulWidget {
   final DeadlineItem deadline;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
-  const DeadlineCard({super.key, required this.deadline, this.onTap});
+  const DeadlineCard({super.key, required this.deadline, this.onTap, this.onLongPress});
 
   @override
   State<DeadlineCard> createState() => _DeadlineCardState();
@@ -129,6 +204,7 @@ class _DeadlineCardState extends State<DeadlineCard> {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),

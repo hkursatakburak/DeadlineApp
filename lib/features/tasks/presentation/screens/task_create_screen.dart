@@ -9,7 +9,8 @@ import '../../../../core/theme/app_colors.dart';
 const _priorityLabels = ['Düşük', 'Orta', 'Yüksek', 'Kritik'];
 
 class TaskCreateScreen extends ConsumerStatefulWidget {
-  const TaskCreateScreen({super.key});
+  final int? taskId;
+  const TaskCreateScreen({super.key, this.taskId});
 
   @override
   ConsumerState<TaskCreateScreen> createState() => _TaskCreateScreenState();
@@ -29,11 +30,38 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
   final List<String> _tags = [];
   final List<String> _subTaskTitles = [];
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.taskId != null) {
+      Future.microtask(() => _loadExistingTask());
+    }
+  }
+
+  void _loadExistingTask() {
+    final tasks = ref.read(tasksNotifierProvider).valueOrNull;
+    if (tasks != null) {
+      final item = tasks.firstWhere(
+        (t) => t.id == widget.taskId,
+        orElse: () => throw Exception('Görev bulunamadı'),
+      );
+      _titleCtrl.text = item.title;
+      setState(() {
+        _dueDate = item.dueDate?.toLocal();
+        _priority = item.priority;
+        _isRepeating = item.isRepeating;
+        _repeatRule = item.repeatRule;
+        _tags.addAll(item.tags);
+        _subTaskTitles.addAll(item.subTasks.map((s) => s.title));
+      });
+    }
+  }
+
   Future<void> _pickDate() async {
     final d = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
+      initialDate: _dueDate ?? DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
     );
     if (d != null) setState(() => _dueDate = d);
@@ -41,15 +69,24 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    final task = Task()
+
+    final existingTasks = ref.read(tasksNotifierProvider).valueOrNull;
+    final task = (widget.taskId != null && existingTasks != null)
+        ? existingTasks.firstWhere((t) => t.id == widget.taskId)
+        : Task();
+
+    if (widget.taskId == null) {
+      task.createdAt = DateTime.now().toUtc();
+      task.isCompleted = false;
+    }
+
+    task
       ..title = _titleCtrl.text.trim()
       ..dueDate = _dueDate?.toUtc()
-      ..isCompleted = false
       ..priority = _priority
       ..tags = List.from(_tags)
       ..isRepeating = _isRepeating
-      ..repeatRule = _isRepeating ? _repeatRule : null
-      ..createdAt = DateTime.now().toUtc();
+      ..repeatRule = _isRepeating ? _repeatRule : null;
 
     final subItems = _subTaskTitles
         .map((t) => SubTaskItem()
@@ -57,7 +94,8 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
           ..isCompleted = false)
         .toList();
 
-    await ref.read(tasksNotifierProvider.notifier).add(task, subItems);
+    await ref.read(tasksNotifierProvider.notifier).saveTask(task, subItems);
+
     if (mounted) context.pop();
   }
 
