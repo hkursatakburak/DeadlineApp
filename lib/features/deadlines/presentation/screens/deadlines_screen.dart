@@ -28,9 +28,7 @@ class DeadlinesScreen extends ConsumerWidget {
 
           // Nearest deadline drives the top animation
           final nearest = active.isNotEmpty ? active.first : null;
-          // Fallback: 7 days from now when no deadlines exist
-          final animDueDate =
-              nearest?.dueDate ?? DateTime.now().add(const Duration(days: 7));
+          final isIdle = active.isEmpty;
 
           return Column(
             children: [
@@ -38,7 +36,9 @@ class DeadlinesScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: DeadlineAnimationWidget(
-                  dueDate: animDueDate,
+                  dueDate: nearest?.dueDate ?? DateTime.now(),
+                  isIdle: isIdle,
+                  customLabel: isIdle ? 'Henüz deadline eklenmedi' : null,
                   isMini: false,
                   cycleDuration: 20.0,
                 ),

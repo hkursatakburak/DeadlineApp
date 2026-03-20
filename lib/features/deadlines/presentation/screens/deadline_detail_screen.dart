@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../data/models/deadline_item.dart';
 import '../../domain/providers/deadlines_provider.dart';
@@ -74,7 +75,7 @@ class _DeadlineDetailScreenState extends ConsumerState<DeadlineDetailScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit_outlined),
-                onPressed: () {/* TODO: push edit screen */},
+                onPressed: () => context.push('/deadlines/edit/${d.id}'),
               ),
               if (!d.isCompleted)
                 IconButton(

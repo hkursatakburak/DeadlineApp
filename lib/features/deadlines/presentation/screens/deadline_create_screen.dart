@@ -7,7 +7,8 @@ import '../../domain/providers/deadlines_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class DeadlineCreateScreen extends ConsumerStatefulWidget {
-  const DeadlineCreateScreen({super.key});
+  final int? deadlineId;
+  const DeadlineCreateScreen({super.key, this.deadlineId});
 
   @override
   ConsumerState<DeadlineCreateScreen> createState() =>
@@ -22,20 +23,44 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
   DateTime? _dueDate;
   TimeOfDay? _dueTime;
   int _priority = 1;
-  final bool _addToGoogle = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.deadlineId != null) {
+      Future.microtask(() => _loadExistingDeadline());
+    }
+  }
+
+  void _loadExistingDeadline() {
+    final deadlines = ref.read(deadlinesNotifierProvider).valueOrNull;
+    if (deadlines != null) {
+      final item = deadlines.firstWhere(
+        (d) => d.id == widget.deadlineId,
+        orElse: () => throw Exception('Deadline bulunamadı'),
+      );
+      _titleCtrl.text = item.title;
+      _descCtrl.text = item.description ?? '';
+      setState(() {
+        _dueDate = item.dueDate.toLocal();
+        _dueTime = TimeOfDay.fromDateTime(item.dueDate.toLocal());
+        _priority = item.priority;
+      });
+    }
+  }
 
   Future<void> _pickDate() async {
     final d = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
+      initialDate: _dueDate ?? DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
     );
     if (d != null && mounted) {
       setState(() => _dueDate = d);
       final t = await showTimePicker(
         context: context,
-        initialTime: const TimeOfDay(hour: 23, minute: 59),
+        initialTime: _dueTime ?? const TimeOfDay(hour: 23, minute: 59),
       );
       if (t != null && mounted) setState(() => _dueTime = t);
     }
@@ -58,17 +83,56 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
       _dueTime?.minute ?? 59,
     ).toUtc();
 
-    final item = DeadlineItem()
+    final existingDeadlines = ref.read(deadlinesNotifierProvider).valueOrNull;
+    final item = (widget.deadlineId != null && existingDeadlines != null)
+        ? existingDeadlines.firstWhere((d) => d.id == widget.deadlineId)
+        : DeadlineItem();
+
+    if (widget.deadlineId == null) {
+      item.createdAt = DateTime.now().toUtc();
+      item.isCompleted = false;
+    }
+
+    item
       ..title = _titleCtrl.text.trim()
       ..description =
           _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim()
       ..dueDate = due
-      ..isCompleted = false
-      ..priority = _priority
-      ..createdAt = DateTime.now().toUtc();
+      ..priority = _priority;
 
-    await ref.read(deadlinesNotifierProvider.notifier).add(item);
+    await ref.read(deadlinesNotifierProvider.notifier).saveDeadline(item);
     if (mounted) context.pop();
+  }
+
+  Future<void> _delete() async {
+    if (widget.deadlineId == null) return;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Silinsin mi?'),
+        content: const Text('Bu deadline kalıcı olarak silinecektir.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('İptal')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && mounted) {
+      await ref
+          .read(deadlinesNotifierProvider.notifier)
+          .delete(widget.deadlineId!);
+      if (mounted) {
+        // Pop edit screen AND detail screen to return to list
+        context.pop();
+        context.pop();
+      }
+    }
   }
 
   @override
@@ -93,8 +157,13 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Yeni Deadline'),
+        title: Text(widget.deadlineId != null ? 'Düzenle' : 'Yeni Deadline'),
         actions: [
+          if (widget.deadlineId != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: _delete,
+            ),
           TextButton(onPressed: _save, child: const Text('Kaydet')),
         ],
       ),
@@ -136,7 +205,7 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
                   value: i,
                   label: Text(priorityLabels[i]),
                   icon: Icon(Icons.circle,
-                      color: AppColors.priorityColor(i), size: 12),
+                       color: AppColors.priorityColor(i), size: 12),
                 ),
               ),
               selected: {_priority},

@@ -27,11 +27,23 @@ class DeadlineAnimationWidget extends StatefulWidget {
   /// Animation loops independently of the countdown label.
   final double cycleDuration;
 
+  /// Whether to show the countdown label ("X days Y hours left").
+  final bool showCountdown;
+
+  /// Whether the animation is in an "idle" state (no active deadlines).
+  final bool isIdle;
+
+  /// Optional label override for the idle or empty state.
+  final String? customLabel;
+
   const DeadlineAnimationWidget({
     super.key,
     required this.dueDate,
     this.isMini = false,
     this.cycleDuration = 20.0,
+    this.showCountdown = true,
+    this.isIdle = false,
+    this.customLabel,
   });
 
   @override
@@ -86,6 +98,17 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
   // ── Label helpers ────────────────────────────────────────────────────────
 
   void _updateTimeLabel() {
+    if (widget.isIdle) {
+      _timeLabel = widget.customLabel ?? 'Henüz deadline yok';
+      _labelColor = Colors.grey;
+      return;
+    }
+
+    if (widget.customLabel != null) {
+      _timeLabel = widget.customLabel!;
+      // Default to urgency color calculation unless label is completely custom
+    }
+
     final diff = widget.dueDate.difference(DateTime.now());
     if (diff.isNegative) {
       _timeLabel = 'Süre doldu';
@@ -169,7 +192,16 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
   }
 
   void _startCycle() {
+    if (widget.isIdle) {
+      _walkCtrl.stop();
+      _armCtrl.stop();
+      _flameCtrl.stop();
+      return;
+    }
+
     _walkCtrl.forward(from: 0);
+    _armCtrl.repeat(reverse: true);
+    _flameCtrl.repeat();
     _scheduleWritingRamp();
 
     _walkCtrl.addStatusListener((status) {
@@ -177,6 +209,28 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
         _startCycle();
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(DeadlineAnimationWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isIdle != widget.isIdle ||
+        oldWidget.dueDate != widget.dueDate ||
+        oldWidget.customLabel != widget.customLabel) {
+      setState(() {
+        _updateTimeLabel();
+        if (widget.isIdle) {
+          _walkCtrl.reset();
+          _walkCtrl.stop();
+          _armCtrl.stop();
+          _flameCtrl.stop();
+        } else {
+          if (!_walkCtrl.isAnimating) {
+            _startCycle();
+          }
+        }
+      });
+    }
   }
 
   void _scheduleWritingRamp() {
@@ -214,12 +268,13 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
     Widget scene = AnimatedBuilder(
       animation: Listenable.merge([_walkCtrl, _armCtrl, _flameCtrl]),
       builder: (context, _) {
-        final cycleVal = _walkCtrl.value;
-        final walkFrac = _walkAnim.value;
-        final armRot = _armAnim.value;
-        final progress = _progressAnim.value;
-        final flameOpacity = widget.isMini ? 0.0 : _flameOpacity(cycleVal);
-        final flameScale = _flameScaleAnim.value;
+        final cycleVal = widget.isIdle ? 0.0 : _walkCtrl.value;
+        final walkFrac = widget.isIdle ? 0.0 : _walkAnim.value;
+        final armRot = widget.isIdle ? 0.0 : _armAnim.value;
+        final progress = widget.isIdle ? 0.0 : _progressAnim.value;
+        final flameOpacity =
+            (widget.isMini || widget.isIdle) ? 0.0 : _flameOpacity(cycleVal);
+        final flameScale = widget.isIdle ? 1.0 : _flameScaleAnim.value;
 
         return Stack(
           children: [
@@ -263,7 +318,7 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
                 ),
               ),
             // ── Day label ──
-            if (!widget.isMini)
+            if (!widget.isMini && widget.showCountdown)
               Positioned(
                 bottom: 0,
                 left: 0,

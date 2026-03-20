@@ -92,8 +92,9 @@ class _SplashScreenState extends State<SplashScreen>
                       dueDate: _splashDueDate,
                       isMini: false,
                       cycleDuration: 3.5,
+                      showCountdown: false,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     // App name
                     Text(
                       'DeadlineApp',

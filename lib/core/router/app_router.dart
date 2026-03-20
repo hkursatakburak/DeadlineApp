@@ -71,6 +71,13 @@ final appRouter = GoRouter(
                   builder: (context, state) => const DeadlineCreateScreen(),
                 ),
                 GoRoute(
+                  path: 'edit/:id',
+                  builder: (context, state) {
+                    final id = int.parse(state.pathParameters['id']!);
+                    return DeadlineCreateScreen(deadlineId: id);
+                  },
+                ),
+                GoRoute(
                   path: 'detail/:id',
                   builder: (context, state) {
                     final id = int.parse(state.pathParameters['id']!);
