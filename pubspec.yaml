@@ -1,0 +1,63 @@
+name: deadline_app
+description: DeadlineApp – Son teslim tarihi yöneticisi
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Local DB
+  isar: ^3.1.0
+  isar_flutter_libs: ^3.1.0
+  path_provider: ^2.1.3
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # Google integration
+  googleapis: ^13.2.0
+  googleapis_auth: ^1.5.1
+  google_sign_in: ^6.2.1
+  http: ^1.2.0
+
+  # Rich text editor — pinned to version compatible with flutter's intl
+  flutter_quill: ^11.5.0
+
+  # Home screen widget
+  home_widget: ^0.5.0
+
+  # Notifications
+  flutter_local_notifications: ^17.2.0
+  timezone: ^0.9.4
+
+  # Utilities
+  intl: ^0.20.0
+  shared_preferences: ^2.2.3
+  uuid: ^4.4.0
+
+  # Animations
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation
+  isar_generator: ^3.1.0
+  riverpod_generator: ^2.4.0
+  build_runner: ^2.4.9
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
