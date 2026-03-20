@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,12 +44,15 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
       _tags.clear();
       _tags.addAll(note.tags);
       try {
-        final doc = Document();
-        _quillCtrl = QuillController(
-          document: doc,
-          selection: const TextSelection.collapsed(offset: 0),
-        );
-      } catch (_) {
+        if (note.contentJson.isNotEmpty) {
+          final doc = Document.fromJson(jsonDecode(note.contentJson));
+          _quillCtrl = QuillController(
+            document: doc,
+            selection: const TextSelection.collapsed(offset: 0),
+          );
+        }
+      } catch (e) {
+        debugPrint('Not yükleme hatası: $e');
         _quillCtrl = QuillController.basic();
       }
       if (mounted) setState(() {});
@@ -57,7 +61,7 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
 
   Future<void> _save({bool silent = false}) async {
     final title = _titleCtrl.text.trim();
-    final content = _quillCtrl.document.toDelta().toJson().toString();
+    final content = jsonEncode(_quillCtrl.document.toDelta().toJson());
     final notifier = ref.read(notesNotifierProvider.notifier);
 
     final newNote = Note()
@@ -72,6 +76,8 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
     if (_isNew) {
       await notifier.add(newNote);
       _isNew = false;
+      // Fetch the newly created note's ID from state if possible, or just stay as editing
+      // To simplify, we'll keep it as new for the duration of this screen if not pooped
     } else {
       newNote.id = widget.noteId!;
       await notifier.saveNote(newNote);
@@ -84,6 +90,10 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
           duration: Duration(seconds: 1),
         ),
       );
+      // Wait for a bit so the snackbar is visible or just pop
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) Navigator.pop(context);
+      });
     }
   }
 

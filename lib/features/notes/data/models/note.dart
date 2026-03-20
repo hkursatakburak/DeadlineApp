@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:isar/isar.dart';
 
 part 'note.g.dart';
@@ -19,15 +21,18 @@ class Note {
   late DateTime createdAt;
   late DateTime updatedAt;
 
-  /// Strip Quill Delta JSON to plain text (very simple version)
+  /// Strip Quill Delta JSON to plain text
+  @ignore
   String get plainTextPreview {
     try {
-      // Just return the raw string stripped of JSON brackets for preview
-      return contentJson
-          .replaceAll(RegExp(r'\{"insert":"'), '')
-          .replaceAll(RegExp(r'"\}'), ' ')
-          .replaceAll(RegExp(r'\[|\]|\{.*?\}'), '')
-          .trim();
+      if (contentJson.isEmpty) return '';
+      final doc = Document.fromJson(jsonDecode(contentJson));
+      String plain = doc.toPlainText().trim();
+      
+      if (plain.length > 100) {
+        return '${plain.substring(0, 100)}...';
+      }
+      return plain;
     } catch (_) {
       return '';
     }
