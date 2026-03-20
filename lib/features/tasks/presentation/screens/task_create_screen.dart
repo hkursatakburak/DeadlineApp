@@ -25,7 +25,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
   int _priority = 0;
   bool _isRepeating = false;
   String? _repeatRule;
-  bool _addToGoogle = false;
+  final bool _addToGoogle = false;
   final List<String> _tags = [];
   final List<String> _subTaskTitles = [];
 
@@ -109,7 +109,8 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
             const SizedBox(height: 16),
 
             // Priority
-            const Text('Öncelik', style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text('Öncelik',
+                style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             SegmentedButton<int>(
               segments: List.generate(
@@ -127,7 +128,8 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
             const SizedBox(height: 16),
 
             // Tags
-            const Text('Etiketler', style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text('Etiketler',
+                style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
@@ -159,7 +161,10 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
                   icon: const Icon(Icons.add),
                   onPressed: () {
                     if (_tagCtrl.text.trim().isNotEmpty) {
-                      setState(() { _tags.add(_tagCtrl.text.trim()); _tagCtrl.clear(); });
+                      setState(() {
+                        _tags.add(_tagCtrl.text.trim());
+                        _tagCtrl.clear();
+                      });
                     }
                   },
                 ),

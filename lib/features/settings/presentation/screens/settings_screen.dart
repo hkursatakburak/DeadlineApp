@@ -18,7 +18,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           // ── Hesap ──────────────────────────────────────────────────────────
-          _SectionHeader('Hesap'),
+          const _SectionHeader('Hesap'),
           ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.grey.shade200,
@@ -52,7 +52,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // ── Bildirimler ────────────────────────────────────────────────────
-          _SectionHeader('Bildirimler'),
+          const _SectionHeader('Bildirimler'),
           SwitchListTile(
             title: const Text('Deadline hatırlatıcıları'),
             subtitle: const Text('7, 3, 1 gün öncesi ve son gün'),
@@ -72,28 +72,26 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // ── Genel ──────────────────────────────────────────────────────────
-          _SectionHeader('Genel'),
+          const _SectionHeader('Genel'),
           ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: const Text('Tema'),
             trailing: SegmentedButton<ThemeMode>(
               segments: const [
-                ButtonSegment(
-                    value: ThemeMode.system, label: Text('Sistem')),
-                ButtonSegment(
-                    value: ThemeMode.light, label: Text('Açık')),
-                ButtonSegment(
-                    value: ThemeMode.dark, label: Text('Koyu')),
+                ButtonSegment(value: ThemeMode.system, label: Text('Sistem')),
+                ButtonSegment(value: ThemeMode.light, label: Text('Açık')),
+                ButtonSegment(value: ThemeMode.dark, label: Text('Koyu')),
               ],
               selected: {themeMode},
-              onSelectionChanged: (s) =>
-                  ref.read(themeModeNotifierProvider.notifier).setTheme(s.first),
+              onSelectionChanged: (s) => ref
+                  .read(themeModeNotifierProvider.notifier)
+                  .setTheme(s.first),
             ),
           ),
           const Divider(),
 
           // ── Hakkında ───────────────────────────────────────────────────────
-          _SectionHeader('Hakkında'),
+          const _SectionHeader('Hakkında'),
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('Sürüm'),
@@ -108,8 +106,8 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             leading: Icon(Icons.hourglass_empty),
             title: Text('Azrail hakkında'),
-            subtitle:
-                Text('Zamanı takip eden, sizi yazan tasarımcıdan daha hızlı sayan yardımcınız.'),
+            subtitle: Text(
+                'Zamanı takip eden, sizi yazan tasarımcıdan daha hızlı sayan yardımcınız.'),
           ),
         ],
       ),

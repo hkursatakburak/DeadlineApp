@@ -113,8 +113,7 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
       // 0% → 6%: stay at 0
       TweenSequenceItem(tween: ConstantTween(0.0), weight: 6),
       // 6% → 10%: 0 → 100/520
-      TweenSequenceItem(
-          tween: Tween(begin: 0.0, end: 100 / 520), weight: 4),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 100 / 520), weight: 4),
       // 10% → 15%: → 140/520
       TweenSequenceItem(
           tween: Tween(begin: 100 / 520, end: 140 / 520), weight: 5),
@@ -140,8 +139,7 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
       TweenSequenceItem(
           tween: Tween(begin: 430 / 520, end: 460 / 520), weight: 10),
       // 85% → 100%: → 520/520
-      TweenSequenceItem(
-          tween: Tween(begin: 460 / 520, end: 1.0), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 460 / 520, end: 1.0), weight: 15),
     ]).animate(CurvedAnimation(parent: _walkCtrl, curve: Curves.linear));
 
     _progressAnim = Tween<double>(begin: 0.0, end: 0.97).animate(_walkCtrl);
@@ -220,8 +218,7 @@ class _DeadlineAnimationWidgetState extends State<DeadlineAnimationWidget>
         final walkFrac = _walkAnim.value;
         final armRot = _armAnim.value;
         final progress = _progressAnim.value;
-        final flameOpacity =
-            widget.isMini ? 0.0 : _flameOpacity(cycleVal);
+        final flameOpacity = widget.isMini ? 0.0 : _flameOpacity(cycleVal);
         final flameScale = _flameScaleAnim.value;
 
         return Stack(
@@ -321,10 +318,8 @@ class _ProgressBarPainter extends CustomPainter {
       ..color = Colors.white24
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
-    canvas.drawLine(
-        Offset(0, barY + barH / 2),
-        Offset(size.width, barY + barH / 2),
-        trackPaint);
+    canvas.drawLine(Offset(0, barY + barH / 2),
+        Offset(size.width, barY + barH / 2), trackPaint);
   }
 
   @override
@@ -381,7 +376,7 @@ class _DeadlineTimeLabel extends StatelessWidget {
                 child: Text(
                   label,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.deadlineRed,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,

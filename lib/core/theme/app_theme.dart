@@ -36,7 +36,7 @@ class AppTheme {
         indicatorColor: _seed.withOpacity(0.12),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(
+            return const TextStyle(
               color: _seed,
               fontWeight: FontWeight.w600,
               fontSize: 12,
@@ -85,7 +85,7 @@ class AppTheme {
         indicatorColor: _seed.withOpacity(0.2),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return TextStyle(
+            return const TextStyle(
               color: _seed,
               fontWeight: FontWeight.w600,
               fontSize: 12,

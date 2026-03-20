@@ -73,8 +73,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calendar_month, size: 100,
-                    color: AppColors.deadlineRed)
+            const Icon(Icons.calendar_month,
+                    size: 100, color: AppColors.deadlineRed)
                 .animate()
                 .scale(delay: 200.ms),
             const SizedBox(height: 40),
@@ -111,8 +111,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.widgets_outlined, size: 100,
-                    color: AppColors.deadlineRed)
+            const Icon(Icons.widgets_outlined,
+                    size: 100, color: AppColors.deadlineRed)
                 .animate()
                 .scale(delay: 200.ms),
             const SizedBox(height: 40),

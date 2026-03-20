@@ -22,7 +22,7 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
   DateTime? _dueDate;
   TimeOfDay? _dueTime;
   int _priority = 1;
-  bool _addToGoogle = false;
+  final bool _addToGoogle = false;
 
   Future<void> _pickDate() async {
     final d = await showDatePicker(
@@ -60,7 +60,8 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
 
     final item = DeadlineItem()
       ..title = _titleCtrl.text.trim()
-      ..description = _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim()
+      ..description =
+          _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim()
       ..dueDate = due
       ..isCompleted = false
       ..priority = _priority
@@ -86,8 +87,8 @@ class _DeadlineCreateScreenState extends ConsumerState<DeadlineCreateScreen> {
       final d = _dueDate!;
       final t = _dueTime;
       dueDateText =
-          '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}'
-          '${t != null ? ' ${t.hour.toString().padLeft(2,'0')}:${t.minute.toString().padLeft(2,'0')}' : ''}';
+          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}'
+          '${t != null ? ' ${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}' : ''}';
     }
 
     return Scaffold(
