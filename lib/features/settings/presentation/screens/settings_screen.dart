@@ -88,13 +88,6 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
           ),
-          ListTile(
-            title: const Text('TEST: 5-Second Notification', style: TextStyle(color: Colors.red)),
-            leading: const Icon(Icons.bug_report, color: Colors.red),
-            onTap: () async {
-              await NotificationService().testNotification();
-            },
-          ),
           const Divider(),
 
           // ── Genel ──────────────────────────────────────────────────────────

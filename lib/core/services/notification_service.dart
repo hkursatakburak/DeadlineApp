@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 import '../../features/deadlines/data/models/deadline_item.dart';
 
@@ -14,6 +15,8 @@ class NotificationService {
 
   Future<void> init() async {
     tz.initializeTimeZones();
+    final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const ios = DarwinInitializationSettings(
@@ -148,37 +151,5 @@ class NotificationService {
 
   Future<void> cancelDailySummary() async {
     await _plugin.cancel(9999);
-  }
-
-  Future<void> testNotification() async {
-    try {
-      debugPrint('🚨 TEST: Scheduling 5-second notification...');
-      final now = tz.TZDateTime.now(tz.local);
-      final scheduledDate = now.add(const Duration(seconds: 5));
-      debugPrint('🚨 TEST: Will schedule at $scheduledDate');
-
-      await _plugin.zonedSchedule(
-        8888,
-        'TEST BİLDİRİM',
-        'Bu bir deneme bildirimidir!',
-        scheduledDate,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'test_channel',
-            'Test',
-            channelDescription: 'Test notifications',
-            importance: Importance.max,
-            priority: Priority.max,
-          ),
-          iOS: DarwinNotificationDetails(),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-      );
-      debugPrint('🚨 TEST: Notification scheduled successfully.');
-    } catch (e) {
-      debugPrint('🚨 TEST NOTIFICATION ERROR: $e');
-    }
   }
 }
