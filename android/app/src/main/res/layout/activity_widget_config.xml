@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0A0C"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Görev Seçimi"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bu widget'ta hangi görevin görünmesini istiyorsunuz?"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        android:layout_marginBottom="24dp" />
+
+    <!-- RadioGroup for selection -->
+    <RadioGroup
+        android:id="@+id/config_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp">
+
+        <RadioButton
+            android:id="@+id/radio_dynamic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dinamik (En acil 2 görev)"
+            android:textColor="#E0E0E0"
+            android:textSize="16sp"
+            android:buttonTint="#00FF88"
+            android:padding="8dp"
+            android:checked="true" />
+
+        <!-- Programmatically added task choices will go here -->
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_save_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Widget'ı Ekle"
+        android:textColor="#0A0A0C"
+        android:backgroundTint="#00FF88"
+        android:textStyle="bold"
+        android:padding="12dp" />
+
+</LinearLayout>

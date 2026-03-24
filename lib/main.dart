@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'app.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/widget_service.dart';
 import 'features/deadlines/data/models/deadline_item.dart';
 import 'features/notes/data/models/note.dart';
 import 'features/tasks/data/models/task.dart';
@@ -32,6 +34,10 @@ Future<void> main() async {
   // Notifications
   await NotificationService().init();
   await NotificationService().requestPermissions();
+
+  // Home Screen Widgets Setup
+  await HomeWidget.setAppGroupId('com.akburak.deadline'); // optional, harmless
+  await HomeWidget.registerBackgroundCallback(widgetBackgroundCallback);
 
   final container = ProviderContainer(
     overrides: [

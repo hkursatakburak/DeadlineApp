@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/services/widget_service.dart';
 import '../../data/models/note.dart';
 import '../../data/repositories/note_repository.dart';
 
@@ -19,7 +20,9 @@ class NotesNotifier extends _$NotesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(noteRepositoryProvider);
       await repo.save(note);
-      return repo.getAll(includeArchived: _showArchived);
+      final all = await repo.getAll(includeArchived: _showArchived);
+      await WidgetService.updateWidgetWithNotes(all);
+      return all;
     });
   }
 
@@ -27,7 +30,9 @@ class NotesNotifier extends _$NotesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(noteRepositoryProvider);
       await repo.save(note);
-      return repo.getAll(includeArchived: _showArchived);
+      final all = await repo.getAll(includeArchived: _showArchived);
+      await WidgetService.updateWidgetWithNotes(all);
+      return all;
     });
   }
 
@@ -35,7 +40,9 @@ class NotesNotifier extends _$NotesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(noteRepositoryProvider);
       await repo.delete(id);
-      return repo.getAll(includeArchived: _showArchived);
+      final all = await repo.getAll(includeArchived: _showArchived);
+      await WidgetService.updateWidgetWithNotes(all);
+      return all;
     });
   }
 
@@ -43,7 +50,9 @@ class NotesNotifier extends _$NotesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(noteRepositoryProvider);
       await repo.togglePin(id);
-      return repo.getAll(includeArchived: _showArchived);
+      final all = await repo.getAll(includeArchived: _showArchived);
+      await WidgetService.updateWidgetWithNotes(all);
+      return all;
     });
   }
 
@@ -51,7 +60,9 @@ class NotesNotifier extends _$NotesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(noteRepositoryProvider);
       await repo.toggleArchive(id);
-      return repo.getAll(includeArchived: _showArchived);
+      final all = await repo.getAll(includeArchived: _showArchived);
+      await WidgetService.updateWidgetWithNotes(all);
+      return all;
     });
   }
 

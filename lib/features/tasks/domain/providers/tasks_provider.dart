@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/services/widget_service.dart';
 import '../../data/models/task.dart';
 import '../../data/repositories/task_repository.dart';
 
@@ -17,7 +18,9 @@ class TasksNotifier extends _$TasksNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(taskRepositoryProvider);
       await repo.save(task, subTasks);
-      return repo.getAll();
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithTasks(all);
+      return all;
     });
   }
 
@@ -25,7 +28,9 @@ class TasksNotifier extends _$TasksNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(taskRepositoryProvider);
       await repo.save(task, subTasks);
-      return repo.getAll();
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithTasks(all);
+      return all;
     });
   }
 
@@ -33,7 +38,9 @@ class TasksNotifier extends _$TasksNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(taskRepositoryProvider);
       await repo.delete(id);
-      return repo.getAll();
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithTasks(all);
+      return all;
     });
   }
 
@@ -41,7 +48,9 @@ class TasksNotifier extends _$TasksNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(taskRepositoryProvider);
       await repo.markCompleted(id, completed);
-      return repo.getAll();
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithTasks(all);
+      return all;
     });
   }
 
@@ -49,7 +58,9 @@ class TasksNotifier extends _$TasksNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(taskRepositoryProvider);
       await repo.toggleSubTask(taskId, subTaskId);
-      return repo.getAll();
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithTasks(all);
+      return all;
     });
   }
 }

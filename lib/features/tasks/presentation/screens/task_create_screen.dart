@@ -28,7 +28,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
   String? _repeatRule;
   final bool _addToGoogle = false;
   final List<String> _tags = [];
-  final List<String> _subTaskTitles = [];
+  final List<SubTaskItem> _subTasks = [];
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
         _isRepeating = item.isRepeating;
         _repeatRule = item.repeatRule;
         _tags.addAll(item.tags);
-        _subTaskTitles.addAll(item.subTasks.map((s) => s.title));
+        _subTasks.addAll(item.subTasks.toList());
       });
     }
   }
@@ -88,11 +88,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
       ..isRepeating = _isRepeating
       ..repeatRule = _isRepeating ? _repeatRule : null;
 
-    final subItems = _subTaskTitles
-        .map((t) => SubTaskItem()
-          ..title = t
-          ..isCompleted = false)
-        .toList();
+    final subItems = _subTasks.toList();
 
     await ref.read(tasksNotifierProvider.notifier).saveTask(task, subItems);
 
@@ -237,14 +233,14 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
             const Text('Alt Görevler',
                 style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            ..._subTaskTitles.asMap().entries.map((e) => ListTile(
+            ..._subTasks.asMap().entries.map((e) => ListTile(
                   leading: const Icon(Icons.subdirectory_arrow_right),
-                  title: Text(e.value),
+                  title: Text(e.value.title),
                   trailing: IconButton(
                     icon: const Icon(Icons.remove_circle_outline,
                         color: Colors.red),
                     onPressed: () =>
-                        setState(() => _subTaskTitles.removeAt(e.key)),
+                        setState(() => _subTasks.removeAt(e.key)),
                   ),
                   dense: true,
                 )),
@@ -258,7 +254,9 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
                     onSubmitted: (v) {
                       if (v.trim().isNotEmpty) {
                         setState(() {
-                          _subTaskTitles.add(v.trim());
+                          _subTasks.add(SubTaskItem()
+                            ..title = v.trim()
+                            ..isCompleted = false);
                           _subTaskCtrl.clear();
                         });
                       }
@@ -270,7 +268,9 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
                   onPressed: () {
                     if (_subTaskCtrl.text.trim().isNotEmpty) {
                       setState(() {
-                        _subTaskTitles.add(_subTaskCtrl.text.trim());
+                        _subTasks.add(SubTaskItem()
+                          ..title = _subTaskCtrl.text.trim()
+                          ..isCompleted = false);
                         _subTaskCtrl.clear();
                       });
                     }

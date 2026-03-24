@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0A0C"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/widget_title_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AKTİF GÖREVLER"
+        android:textColor="#00FF88"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1"
+        android:fontFamily="sans-serif-condensed"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Task Item 1 -->
+    <LinearLayout
+        android:id="@+id/widget_item_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone">
+        
+        <!-- Main Task Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            
+            <ImageView
+                android:id="@+id/widget_check_1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/checkbox_off_background"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:id="@+id/widget_title_1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#E0E0E0"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:ellipsize="end" />
+        </LinearLayout>
+        
+        <!-- Subtask 1.1 -->
+        <LinearLayout
+            android:id="@+id/widget_subitem_1_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="36dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="2dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/widget_subcheck_1_1"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/checkbox_off_background"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:id="@+id/widget_subtitle_1_1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+        
+        <!-- Subtask 1.2 -->
+        <LinearLayout
+            android:id="@+id/widget_subitem_1_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="36dp"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/widget_subcheck_1_2"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/checkbox_off_background"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:id="@+id/widget_subtitle_1_2"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Task Item 2 -->
+    <LinearLayout
+        android:id="@+id/widget_item_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <ImageView
+                android:id="@+id/widget_check_2"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/checkbox_off_background"
+                android:layout_marginEnd="12dp" />
+            <TextView
+                android:id="@+id/widget_title_2"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#E0E0E0"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:ellipsize="end" />
+        </LinearLayout>
+        <!-- Subtask 2.1 -->
+        <LinearLayout
+            android:id="@+id/widget_subitem_2_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="36dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="2dp"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/widget_subcheck_2_1"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/checkbox_off_background"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:id="@+id/widget_subtitle_2_1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+        <!-- Subtask 2.2 -->
+        <LinearLayout
+            android:id="@+id/widget_subitem_2_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="36dp"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/widget_subcheck_2_2"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/checkbox_off_background"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:id="@+id/widget_subtitle_2_2"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tüm görevler tamamlandı."
+        android:textColor="#555555"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        android:gravity="center"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

@@ -36,14 +36,28 @@ class TaskRepository {
 
   Future<int> save(Task task, List<SubTaskItem> subItems) async {
     return _isar.writeTxn(() async {
-      // Save subtasks first
+      // Calculate missing subtasks to delete
+      final oldSubTaskIds = task.subTasks.map((e) => e.id).toSet();
+      
+      // Save all current subtasks (updates existing if id > 0, inserts new if 0)
       for (final s in subItems) {
         await _isar.subTaskItems.put(s);
       }
+      
+      final newSubTaskIds = subItems.map((e) => e.id).toSet();
+      final toDeleteIds = oldSubTaskIds.difference(newSubTaskIds);
+      
+      if (toDeleteIds.isNotEmpty) {
+        await _isar.subTaskItems.deleteAll(toDeleteIds.toList());
+      }
+      
+      final taskId = await _isar.tasks.put(task);
+      
+      task.subTasks.clear();
       task.subTasks.addAll(subItems);
-      final id = await _isar.tasks.put(task);
       await task.subTasks.save();
-      return id;
+      
+      return taskId;
     });
   }
 
