@@ -131,4 +131,8 @@ class NotificationService {
       await _plugin.cancel(deadlineId * 10 + days);
     }
   }
+
+  Future<void> cancelDailySummary() async {
+    await _plugin.cancel(9999);
+  }
 }

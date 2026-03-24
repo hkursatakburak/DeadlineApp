@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/providers/theme_provider.dart';
 import '../../../calendar/domain/providers/google_auth_provider.dart';
+import '../providers/daily_summary_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -12,6 +13,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeNotifierProvider);
     final authState = ref.watch(googleAuthNotifierProvider);
     final isSignedIn = authState.status == GoogleAuthStatus.signedIn;
+    final dailySummary = ref.watch(dailySummaryProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Ayarlar')),
@@ -63,10 +65,26 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SwitchListTile(
             title: const Text('Günlük özet'),
-            subtitle: const Text('Her gün seçilen saatte'),
-            value: false,
-            onChanged: (v) {
-              // TODO: persist & schedule
+            subtitle: Text(
+              dailySummary.isEnabled && dailySummary.time != null
+                  ? "Her gün ${dailySummary.time!.hour.toString().padLeft(2, '0')}:${dailySummary.time!.minute.toString().padLeft(2, '0')}'da"
+                  : 'Her gün seçilen saatte',
+            ),
+            value: dailySummary.isEnabled,
+            onChanged: (v) async {
+              if (v) {
+                final pickedTime = await showTimePicker(
+                  context: context,
+                  initialTime: dailySummary.time ?? const TimeOfDay(hour: 9, minute: 0),
+                  helpText: 'Günlük Özet Saati Seçin',
+                );
+
+                if (pickedTime != null) {
+                  await ref.read(dailySummaryProvider.notifier).setSummary(true, pickedTime);
+                }
+              } else {
+                await ref.read(dailySummaryProvider.notifier).setSummary(false);
+              }
             },
           ),
           const Divider(),

@@ -179,7 +179,7 @@ class TasksScreen extends ConsumerWidget {
       ...tasks.asMap().entries.map((entry) {
         final i = entry.key;
         final task = entry.value;
-        return _TaskTile(
+        return TaskTile(
           task: task,
           onComplete: (v) => notifier.markCompleted(task.id, v ?? false),
           onLongPress: () => _showTaskActions(context, task, notifier),
@@ -205,13 +205,14 @@ class TasksScreen extends ConsumerWidget {
   }
 }
 
-class _TaskTile extends StatefulWidget {
+class TaskTile extends StatefulWidget {
   final Task task;
   final ValueChanged<bool?> onComplete;
   final VoidCallback onDelete;
   final VoidCallback onLongPress;
 
-  const _TaskTile({
+  const TaskTile({
+    super.key,
     required this.task,
     required this.onComplete,
     required this.onDelete,
@@ -219,10 +220,10 @@ class _TaskTile extends StatefulWidget {
   });
 
   @override
-  State<_TaskTile> createState() => _TaskTileState();
+  State<TaskTile> createState() => TaskTileState();
 }
 
-class _TaskTileState extends State<_TaskTile> {
+class TaskTileState extends State<TaskTile> {
   bool _expanded = false;
 
   @override
