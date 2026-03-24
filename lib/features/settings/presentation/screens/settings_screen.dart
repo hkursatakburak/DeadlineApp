@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/providers/theme_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../calendar/domain/providers/google_auth_provider.dart';
 import '../providers/daily_summary_provider.dart';
+import '../providers/deadline_reminders_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
     final authState = ref.watch(googleAuthNotifierProvider);
     final isSignedIn = authState.status == GoogleAuthStatus.signedIn;
     final dailySummary = ref.watch(dailySummaryProvider);
+    final deadlineReminders = ref.watch(deadlineRemindersProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Ayarlar')),
@@ -58,10 +61,8 @@ class SettingsScreen extends ConsumerWidget {
           SwitchListTile(
             title: const Text('Deadline hatırlatıcıları'),
             subtitle: const Text('7, 3, 1 gün öncesi ve son gün'),
-            value: true,
-            onChanged: (v) {
-              // TODO: persist with SharedPreferences
-            },
+            value: deadlineReminders,
+            onChanged: (v) => ref.read(deadlineRemindersProvider.notifier).toggle(v),
           ),
           SwitchListTile(
             title: const Text('Günlük özet'),
@@ -85,6 +86,13 @@ class SettingsScreen extends ConsumerWidget {
               } else {
                 await ref.read(dailySummaryProvider.notifier).setSummary(false);
               }
+            },
+          ),
+          ListTile(
+            title: const Text('TEST: 5-Second Notification', style: TextStyle(color: Colors.red)),
+            leading: const Icon(Icons.bug_report, color: Colors.red),
+            onTap: () async {
+              await NotificationService().testNotification();
             },
           ),
           const Divider(),

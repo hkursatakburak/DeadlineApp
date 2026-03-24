@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -31,40 +32,25 @@ class NotificationService {
             IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
 
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    
+    await androidPlugin?.requestNotificationsPermission();
+    await androidPlugin?.requestExactAlarmsPermission();
   }
+
+  static const reminders = [
+    (days: 7, emoji: '📅', suffix: 'için 7 gün kaldı'),
+    (days: 3, emoji: '⚠️', suffix: 'için 3 gün kaldı!'),
+    (days: 1, emoji: '🚨', suffix: 'YARIN son gün!'),
+    (days: 0, emoji: '☠️', suffix: 'bugün bitiyor!'),
+  ];
 
   Future<void> scheduleDeadlineReminders(DeadlineItem deadline) async {
     await cancelDeadlineNotifications(deadline.id);
 
     final dueDate = deadline.dueDate.toLocal();
     final now = DateTime.now();
-
-    final reminders = [
-      (
-        days: 7,
-        emoji: '📅',
-        suffix: 'için 7 gün kaldı',
-      ),
-      (
-        days: 3,
-        emoji: '⚠️',
-        suffix: 'için 3 gün kaldı!',
-      ),
-      (
-        days: 1,
-        emoji: '🚨',
-        suffix: 'YARIN son gün!',
-      ),
-      (
-        days: 0,
-        emoji: '☠️',
-        suffix: 'bugün bitiyor!',
-      ),
-    ];
 
     for (final r in reminders) {
       final scheduleTime = r.days == 0
@@ -127,12 +113,72 @@ class NotificationService {
   }
 
   Future<void> cancelDeadlineNotifications(int deadlineId) async {
-    for (final days in [7, 3, 1, 0]) {
-      await _plugin.cancel(deadlineId * 10 + days);
+    for (final r in reminders) {
+      await _plugin.cancel(deadlineId * 10 + r.days);
+    }
+  }
+
+  Future<void> cancelAllDeadlineNotifications() async {
+    // Flutter Local Notifications doesn't have a direct "cancel by channel"
+    // but we can loop through the platform-specific calls if we really needed to.
+    // However, the most robust way in this app since we know our ID scheme
+    // and if we don't have a list of all IDs, is to just use cancelAll()
+    // and then re-schedule the daily summary if it was enabled.
+    // But since the user specifically asked for this, and we might add more notifications,
+    // it's better to just cancel all and let the caller handle dependencies.
+    // Wait, cancelAll() is nuclear.
+    
+    // Better: The caller (provider) will iterate active deadlines and cancel them.
+    // Or we provide a way to cancel EVERYTHING and let the app re-init.
+    
+    // Let's implement it by canceling ALL and letting the user know it might affect others,
+    // OR just use a very large loop if we don't have the list.
+    // Actually, I'll fetch the list of pending notifications and cancel those with math logic.
+    
+    final pending = await _plugin.pendingNotificationRequests();
+    for (final p in pending) {
+      // IDs for deadlines always end in 7, 3, 1, or 0.
+      // IDs are (deadline.id * 10) + r.days.
+      final days = p.id % 10;
+      if ([0, 1, 3, 7].contains(days) && p.id != 9999) {
+        await _plugin.cancel(p.id);
+      }
     }
   }
 
   Future<void> cancelDailySummary() async {
     await _plugin.cancel(9999);
+  }
+
+  Future<void> testNotification() async {
+    try {
+      debugPrint('🚨 TEST: Scheduling 5-second notification...');
+      final now = tz.TZDateTime.now(tz.local);
+      final scheduledDate = now.add(const Duration(seconds: 5));
+      debugPrint('🚨 TEST: Will schedule at $scheduledDate');
+
+      await _plugin.zonedSchedule(
+        8888,
+        'TEST BİLDİRİM',
+        'Bu bir deneme bildirimidir!',
+        scheduledDate,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'test_channel',
+            'Test',
+            channelDescription: 'Test notifications',
+            importance: Importance.max,
+            priority: Priority.max,
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+      );
+      debugPrint('🚨 TEST: Notification scheduled successfully.');
+    } catch (e) {
+      debugPrint('🚨 TEST NOTIFICATION ERROR: $e');
+    }
   }
 }

@@ -1,5 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/widget_service.dart';
+import '../../../settings/presentation/providers/deadline_reminders_provider.dart';
 import '../../data/models/deadline_item.dart';
 import '../../data/repositories/deadline_repository.dart';
 
@@ -13,20 +16,23 @@ class DeadlinesNotifier extends _$DeadlinesNotifier {
     return repo.getAll();
   }
 
-  Future<void> add(DeadlineItem item) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repo = ref.read(deadlineRepositoryProvider);
-      await repo.save(item);
-      return repo.getAll();
-    });
-  }
-
   Future<void> saveDeadline(DeadlineItem item) async {
+    state = const AsyncLoading(); // Use loading during save
     state = await AsyncValue.guard(() async {
       final repo = ref.read(deadlineRepositoryProvider);
-      await repo.save(item);
-      return repo.getAll();
+      final id = await repo.save(item);
+      item.id = id; // Ensure we have the saved ID
+
+      final remindersEnabled = ref.read(deadlineRemindersProvider);
+      if (remindersEnabled && !item.isCompleted) {
+        await NotificationService().scheduleDeadlineReminders(item);
+      } else {
+        await NotificationService().cancelDeadlineNotifications(item.id);
+      }
+
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithDeadlines(all);
+      return all;
     });
   }
 
@@ -34,7 +40,11 @@ class DeadlinesNotifier extends _$DeadlinesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(deadlineRepositoryProvider);
       await repo.delete(id);
-      return repo.getAll();
+      await NotificationService().cancelDeadlineNotifications(id);
+      
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithDeadlines(all);
+      return all;
     });
   }
 
@@ -42,7 +52,11 @@ class DeadlinesNotifier extends _$DeadlinesNotifier {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(deadlineRepositoryProvider);
       await repo.markCompleted(id);
-      return repo.getAll();
+      await NotificationService().cancelDeadlineNotifications(id);
+      
+      final all = await repo.getAll();
+      await WidgetService.updateWidgetWithDeadlines(all);
+      return all;
     });
   }
 }

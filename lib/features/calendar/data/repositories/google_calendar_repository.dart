@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as gcal;
 import 'package:googleapis_auth/googleapis_auth.dart';
@@ -27,12 +29,18 @@ class GoogleCalendarRepository {
 
   Future<GoogleSignInAccount?> signIn() async {
     try {
+      debugPrint('🚨 GOOGLE SIGN-IN FLOW STARTED');
       _currentUser = await _googleSignIn.signIn();
+      debugPrint('🚨 GOOGLE SIGN-IN result: ${_currentUser?.email}');
       if (_currentUser != null) {
         await _initCalendarApi();
       }
       return _currentUser;
+    } on PlatformException catch (e) {
+      debugPrint('🚨 GOOGLE CALENDAR ERROR (PlatformException): code=${e.code}, message=${e.message}, details=${e.details}');
+      throw Exception('Google oturum açma hatası: ${e.message}');
     } catch (e) {
+      debugPrint('🚨 GOOGLE CALENDAR ERROR: $e');
       throw Exception('Google oturum açma hatası: $e');
     }
   }
@@ -44,11 +52,21 @@ class GoogleCalendarRepository {
   }
 
   Future<GoogleSignInAccount?> signInSilently() async {
-    _currentUser = await _googleSignIn.signInSilently();
-    if (_currentUser != null) {
-      await _initCalendarApi();
+    try {
+      debugPrint('🚨 GOOGLE SIGN-IN SILENTLY FLOW STARTED');
+      _currentUser = await _googleSignIn.signInSilently();
+      debugPrint('🚨 GOOGLE SIGN-IN SILENTLY result: ${_currentUser?.email}');
+      if (_currentUser != null) {
+        await _initCalendarApi();
+      }
+      return _currentUser;
+    } on PlatformException catch (e) {
+      debugPrint('🚨 GOOGLE CALENDAR ERROR (Silent, PlatformException): code=${e.code}, message=${e.message}, details=${e.details}');
+      return null;
+    } catch (e) {
+      debugPrint('🚨 GOOGLE CALENDAR ERROR (Silent): $e');
+      return null;
     }
-    return _currentUser;
   }
 
   Future<void> _initCalendarApi() async {

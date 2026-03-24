@@ -13,6 +13,7 @@ import 'shared/providers/isar_provider.dart';
 import 'shared/providers/theme_provider.dart';
 import 'features/calendar/domain/providers/google_auth_provider.dart';
 import 'features/settings/presentation/providers/daily_summary_provider.dart';
+import 'features/settings/presentation/providers/deadline_reminders_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,9 +39,10 @@ Future<void> main() async {
     ],
   );
 
-  // Init theme
+  // Init settings providers
   await container.read(themeModeNotifierProvider.notifier).init();
   await container.read(dailySummaryProvider.notifier).init();
+  await container.read(deadlineRemindersProvider.notifier).init();
 
   // Silent Google sign-in
   container.read(googleAuthNotifierProvider.notifier).init();
