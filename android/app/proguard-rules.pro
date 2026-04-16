@@ -29,3 +29,13 @@
 -dontwarn com.google.android.play.core.tasks.OnFailureListener
 -dontwarn com.google.android.play.core.tasks.OnSuccessListener
 -dontwarn com.google.android.play.core.tasks.Task
+
+# flutter_local_notifications & Gson Configuration
+# Prevents "Missing type parameter" crash caused by R8 stripping Generic type signatures
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep class com.google.gson.** { *; }
+-keep class com.dexterous.flutterlocalnotifications.** { *; }
+-keep class androidx.core.app.NotificationCompat** { *; }

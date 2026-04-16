@@ -19,7 +19,9 @@ GoogleCalendarRepository googleCalendarRepository(
 class GoogleCalendarRepository {
   static const _scopes = [gcal.CalendarApi.calendarScope];
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: _scopes);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: _scopes,
+  );
 
   GoogleSignInAccount? _currentUser;
   gcal.CalendarApi? _calendarApi;
@@ -29,7 +31,7 @@ class GoogleCalendarRepository {
 
   Future<GoogleSignInAccount?> signIn() async {
     try {
-      debugPrint('🚨 GOOGLE SIGN-IN FLOW STARTED');
+      debugPrint('🚨 GOOGLE SIGN-IN FLOW STARTED (Client ID: 956999198500-eqj1kuqhu8v9l1c19vjda78ljp1tlehi.apps.googleusercontent.com)');
       _currentUser = await _googleSignIn.signIn();
       debugPrint('🚨 GOOGLE SIGN-IN result: ${_currentUser?.email}');
       if (_currentUser != null) {

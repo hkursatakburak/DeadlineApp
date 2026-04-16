@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/providers/theme_provider.dart';
-import '../../../../core/services/notification_service.dart';
 import '../../../calendar/domain/providers/google_auth_provider.dart';
 import '../providers/daily_summary_provider.dart';
 import '../providers/deadline_reminders_provider.dart';
@@ -62,7 +61,8 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Deadline hatırlatıcıları'),
             subtitle: const Text('7, 3, 1 gün öncesi ve son gün'),
             value: deadlineReminders,
-            onChanged: (v) => ref.read(deadlineRemindersProvider.notifier).toggle(v),
+            onChanged: (v) =>
+                ref.read(deadlineRemindersProvider.notifier).toggle(v),
           ),
           SwitchListTile(
             title: const Text('Günlük özet'),
@@ -76,12 +76,15 @@ class SettingsScreen extends ConsumerWidget {
               if (v) {
                 final pickedTime = await showTimePicker(
                   context: context,
-                  initialTime: dailySummary.time ?? const TimeOfDay(hour: 9, minute: 0),
+                  initialTime:
+                      dailySummary.time ?? const TimeOfDay(hour: 9, minute: 0),
                   helpText: 'Günlük Özet Saati Seçin',
                 );
 
                 if (pickedTime != null) {
-                  await ref.read(dailySummaryProvider.notifier).setSummary(true, pickedTime);
+                  await ref
+                      .read(dailySummaryProvider.notifier)
+                      .setSummary(true, pickedTime);
                 }
               } else {
                 await ref.read(dailySummaryProvider.notifier).setSummary(false);
@@ -100,8 +103,9 @@ class SettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.palette_outlined, 
-                           color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      Icon(Icons.palette_outlined,
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                       const SizedBox(width: 16),
                       const Text(
                         'Tema',
@@ -120,15 +124,15 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     segments: const [
                       ButtonSegment(
-                        value: ThemeMode.system, 
+                        value: ThemeMode.system,
                         label: Text('Sistem', style: TextStyle(fontSize: 11)),
                       ),
                       ButtonSegment(
-                        value: ThemeMode.light, 
+                        value: ThemeMode.light,
                         label: Text('Açık', style: TextStyle(fontSize: 11)),
                       ),
                       ButtonSegment(
-                        value: ThemeMode.dark, 
+                        value: ThemeMode.dark,
                         label: Text('Koyu', style: TextStyle(fontSize: 11)),
                       ),
                     ],

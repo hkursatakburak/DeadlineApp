@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -37,7 +36,7 @@ class NotificationService {
 
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
-    
+
     await androidPlugin?.requestNotificationsPermission();
     await androidPlugin?.requestExactAlarmsPermission();
   }
@@ -88,8 +87,8 @@ class NotificationService {
   Future<void> scheduleDailySummary(int hour, int minute) async {
     await _plugin.cancel(9999);
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-        tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
@@ -130,14 +129,14 @@ class NotificationService {
     // But since the user specifically asked for this, and we might add more notifications,
     // it's better to just cancel all and let the caller handle dependencies.
     // Wait, cancelAll() is nuclear.
-    
+
     // Better: The caller (provider) will iterate active deadlines and cancel them.
     // Or we provide a way to cancel EVERYTHING and let the app re-init.
-    
+
     // Let's implement it by canceling ALL and letting the user know it might affect others,
     // OR just use a very large loop if we don't have the list.
     // Actually, I'll fetch the list of pending notifications and cancel those with math logic.
-    
+
     final pending = await _plugin.pendingNotificationRequests();
     for (final p in pending) {
       // IDs for deadlines always end in 7, 3, 1, or 0.
